@@ -12,7 +12,6 @@ export const getSellerCustomers = asyncHandler(async (req, res) => {
 
   const { search } = req.query;
 
-  // Orders containing this seller's products
   const orders = await Order.find({
     "items.seller": sellerId,
   }).populate("user", "name email phone createdAt");
@@ -80,7 +79,7 @@ export const getSellerCustomers = asyncHandler(async (req, res) => {
       customers.sort((a, b) => b.lastOrder - a.lastOrder);
   }
 
-  // Filters
+  
   const filter = req.query.filter;
 
   if (filter === "repeat") {

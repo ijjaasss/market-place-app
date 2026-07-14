@@ -11,7 +11,6 @@ const SORT_OPTIONS = {
   "amount-desc": { totalAmount: -1 },
 };
 
-// 1. Get All Seller Orders (with Pagination, Filters, and Cards)
 export const getSellerOrders = asyncHandler(async (req, res, next) => {
   const sellerId = req.seller._id;
   const page = parseInt(req.query.page) || 1;
@@ -20,7 +19,6 @@ export const getSellerOrders = asyncHandler(async (req, res, next) => {
 
   const { search, status, payment, sort } = req.query;
 
-  // Crucial: Only fetch orders where this seller has at least one item
   const filter = { "items.seller": sellerId };
 
   if (search) {
@@ -41,7 +39,6 @@ export const getSellerOrders = asyncHandler(async (req, res, next) => {
 
   const sortBy = SORT_OPTIONS[sort] || SORT_OPTIONS.newest;
 
-  // Run all queries concurrently for maximum performance
   const [
     orders,
     totalRecords,
@@ -53,12 +50,12 @@ export const getSellerOrders = asyncHandler(async (req, res, next) => {
     cancelledCount,
   ] = await Promise.all([
     Order.find(filter)
-      .populate("user", "name email") // Pulls in basic user details
+      .populate("user", "name email") 
       .sort(sortBy)
       .skip(skip)
       .limit(limit),
-    Order.countDocuments(filter), // Count with current search/filters applied
-    Order.countDocuments({ "items.seller": sellerId }), // Absolute total
+    Order.countDocuments(filter), 
+    Order.countDocuments({ "items.seller": sellerId }), 
     Order.countDocuments({ "items.seller": sellerId, orderStatus: "Pending" }),
     Order.countDocuments({ "items.seller": sellerId, orderStatus: "Confirmed" }),
     Order.countDocuments({ "items.seller": sellerId, orderStatus: "Shipped" }),
@@ -84,7 +81,7 @@ export const getSellerOrders = asyncHandler(async (req, res, next) => {
   });
 });
 
-// 2. Get Single Order Details
+
 export const getOrderDetails = asyncHandler(async (req, res, next) => {
   const sellerId = req.seller._id;
 
@@ -117,7 +114,6 @@ export const getOrderDetails = asyncHandler(async (req, res, next) => {
   });
 });
 
-// 3. Update Order Status
 export const updateOrderStatus = asyncHandler(async (req, res, next) => {
   const { orderStatus } = req.body;
 
