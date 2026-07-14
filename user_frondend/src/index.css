@@ -1,0 +1,14 @@
+/* src/index.css */
+@import "tailwindcss";
+
+@theme {
+  --color-brand-light: #CDCBD6;
+  --color-brand-orange: #D96846;
+  --color-brand-olive: #596235;
+  --color-brand-dark: #2F3020;
+}
+
+body {
+  background-color: var(--color-brand-light);
+  color: var(--color-brand-dark);
+}
