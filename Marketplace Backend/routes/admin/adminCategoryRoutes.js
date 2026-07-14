@@ -8,7 +8,7 @@ import upload from "../../middlewares/upload.js";
 const router=express.Router()
 
 router.use(adminAuthMiddleware,isAdmin);
-router.get('/',getCategories)
+router.get('/',upload.single("image"),getCategories)
 router.post('/',createCategory)
 router.get('/:id',getCategoryById)
 router.put("/:id",upload.single("image"),updateCategory)
