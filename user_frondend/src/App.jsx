@@ -22,9 +22,7 @@ import Checkout from './pages/Checkout';
 import Orders from './pages/Orders';
 import OrderDetails from './pages/OrderDetails';
 
-// Placeholder Pages (You will build these later based on your structure)
 
-const Profile = () => <div className="p-8 text-2xl font-bold">Protected Profile</div>;
 const NotFound = () => <div className="p-8 text-2xl font-bold">404 - Not Found</div>;
 
 export default function App() {
@@ -47,7 +45,7 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <ToastContainer position="bottom-right" />
+      <ToastContainer position="top-right" />
       <Header />
 
 
@@ -71,7 +69,7 @@ export default function App() {
 
 
         <Route element={<ProtectedRoute />}>
-          <Route path="/profile" element={<Profile />} />
+
           <Route path='/cart' element={<Cart />}/>
           <Route path='/wishlist' element={<Wishlist />}/>
           <Route path='/checkout' element={<Checkout />}/>

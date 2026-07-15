@@ -1,9 +1,21 @@
 // src/pages/Categories.jsx
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { fetchCategories } from '../store/categorySlice';
-import { Search, ArrowRight, Loader2, Package, ImageIcon } from 'lucide-react';
+import { 
+  Search, 
+  ArrowRight, 
+  Loader2, 
+  Package, 
+  ImageIcon,
+  Grid3x3,
+  LayoutGrid,
+  Sparkles,
+  ChevronRight,
+  Tag,
+  ShoppingBag
+} from 'lucide-react';
 
 export default function Categories() {
   const dispatch = useDispatch();
@@ -11,8 +23,9 @@ export default function Categories() {
   
   const { items: categories, isLoading } = useSelector((state) => state.categories);
   const [searchTerm, setSearchTerm] = useState('');
+  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'compact'
+  const searchInputRef = useRef(null);
 
-  // Fetch categories when the page loads
   useEffect(() => {
     dispatch(fetchCategories());
   }, [dispatch]);
@@ -26,95 +39,257 @@ export default function Categories() {
     navigate(`/products?category=${categoryId}`);
   };
 
+  // Get random gradient for category cards
+  const getGradient = (index) => {
+    const gradients = [
+      'from-brand-orange/20 to-brand-orange/5',
+      'from-brand-olive/20 to-brand-olive/5',
+      'from-brand-light to-brand-light/50',
+      'from-blue-200/30 to-blue-100/20',
+      'from-purple-200/30 to-purple-100/20',
+      'from-pink-200/30 to-pink-100/20',
+    ];
+    return gradients[index % gradients.length];
+  };
+
   return (
-    <div className="min-h-screen bg-brand-light/20 pb-20 pt-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-b from-brand-light/30 to-white pb-20">
+      
+      {/* ===== HERO HEADER ===== */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-brand-dark via-brand-dark/95 to-brand-olive/90">
+        <div className="absolute top-[-30%] right-[-10%] w-[400px] h-[400px] bg-brand-orange/20 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-[-40%] left-[-10%] w-[500px] h-[500px] bg-brand-olive/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
         
-        {/* Header & Search Section */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-          <div>
-            <h1 className="text-4xl font-black text-brand-dark">Categories</h1>
-            <p className="text-brand-dark/70 mt-2">Find exactly what you're looking for</p>
-          </div>
-          
-          <div className="relative w-full md:w-96">
-            <input
-              type="text"
-              placeholder="Search categories..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white border border-gray-200 text-brand-dark px-4 py-3 pl-12 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-olive/50 shadow-sm transition-all"
-            />
-            <Search className="absolute left-4 top-3.5 h-5 w-5 text-brand-dark/40" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-20 relative z-10">
+          <div className="text-center max-w-3xl mx-auto">
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20 mb-6">
+              <Sparkles className="h-4 w-4 text-brand-orange" />
+              <span className="text-white/90 text-sm font-medium">Browse Our Collections</span>
+            </div>
+            
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4">
+              Explore <span className="text-brand-orange">Categories</span>
+            </h1>
+            
+            <p className="text-brand-light/80 text-lg max-w-2xl mx-auto">
+              Discover thousands of products organized in our carefully curated categories
+            </p>
+
+            {/* Search Bar */}
+            <div className="mt-8 max-w-2xl mx-auto">
+              <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl border border-white/20 hover:border-white/40 transition-colors group focus-within:border-brand-orange">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-brand-light/60 group-focus-within:text-brand-orange transition-colors" />
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  placeholder="Search for categories..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full bg-transparent text-white placeholder:text-brand-light/50 px-12 py-4 rounded-2xl focus:outline-none text-lg"
+                />
+                {searchTerm && (
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-brand-light/50 hover:text-white transition-colors"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+              
+              {/* Category count */}
+              {!isLoading && (
+                <p className="text-brand-light/60 text-sm mt-3 text-center">
+                  {filteredCategories.length} {filteredCategories.length === 1 ? 'category' : 'categories'} available
+                </p>
+              )}
+            </div>
           </div>
         </div>
+      </section>
 
-        {/* Loading State */}
-        {isLoading ? (
-          <div className="flex justify-center py-20">
-            <Loader2 className="h-12 w-12 text-brand-orange animate-spin" />
-          </div>
-        ) : (
-          /* Categories Grid */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {filteredCategories.length > 0 ? (
-              filteredCategories.map((category) => (
-                <div 
-                  key={category._id} 
-                  onClick={() => handleCategoryClick(category._id)}
-                  className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden flex flex-col group border border-gray-100 cursor-pointer"
+      {/* ===== CATEGORIES GRID ===== */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-8 relative z-20">
+        <div className="bg-white rounded-3xl shadow-2xl p-6 md:p-10">
+          
+          {/* Toolbar */}
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-8 pb-6 border-b border-gray-100">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 bg-brand-light/20 rounded-xl p-1">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 rounded-lg transition-all ${
+                    viewMode === 'grid' 
+                      ? 'bg-brand-orange text-white shadow-lg shadow-brand-orange/30' 
+                      : 'text-brand-dark/60 hover:text-brand-dark'
+                  }`}
                 >
-                  {/* Category Image */}
-                  <div className="h-56 bg-brand-light/30 relative overflow-hidden flex-shrink-0">
-                    {category.image ? (
-                      <img 
-                        src={category.image} 
-                        alt={category.name} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
+                  <Grid3x3 className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={() => setViewMode('compact')}
+                  className={`p-2 rounded-lg transition-all ${
+                    viewMode === 'compact' 
+                      ? 'bg-brand-orange text-white shadow-lg shadow-brand-orange/30' 
+                      : 'text-brand-dark/60 hover:text-brand-dark'
+                  }`}
+                >
+                  <LayoutGrid className="h-5 w-5" />
+                </button>
+              </div>
+              <span className="text-brand-dark/60 text-sm hidden sm:inline">
+                {filteredCategories.length} categories
+              </span>
+            </div>
+            
+            <div className="flex items-center gap-2 text-brand-dark/60 text-sm">
+              <Tag className="h-4 w-4" />
+              <span>Popular categories shown first</span>
+            </div>
+          </div>
+
+          {/* Loading State */}
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <Loader2 className="h-16 w-16 text-brand-orange animate-spin" />
+              <p className="text-brand-dark/60 mt-4 font-medium">Loading categories...</p>
+            </div>
+          ) : (
+            /* Categories Grid */
+            <div className={`grid ${
+              viewMode === 'grid' 
+                ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4' 
+                : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3'
+            } gap-6`}>
+              
+              {filteredCategories.length > 0 ? (
+                filteredCategories.map((category, index) => (
+                  <div 
+                    key={category._id} 
+                    onClick={() => handleCategoryClick(category._id)}
+                    className={`group relative bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-500 overflow-hidden cursor-pointer border border-gray-100 hover:border-brand-orange/20 hover:-translate-y-1 ${
+                      viewMode === 'compact' ? 'flex items-center p-4 gap-4' : 'flex flex-col'
+                    }`}
+                  >
+                    {/* Gradient Background */}
+                    <div className={`absolute inset-0 bg-gradient-to-br ${getGradient(index)} opacity-0 group-hover:opacity-100 transition-opacity duration-500`}></div>
+                    
+                    {/* Image Container */}
+                    <div className={`relative overflow-hidden ${
+                      viewMode === 'compact' 
+                        ? 'w-20 h-20 rounded-xl flex-shrink-0' 
+                        : 'h-52'
+                    }`}>
+                      {category.image ? (
+                        <img 
+                          src={category.image} 
+                          alt={category.name} 
+                          className={`w-full h-full object-cover ${
+                            viewMode === 'compact' ? 'rounded-xl' : ''
+                          } group-hover:scale-110 transition-transform duration-700`}
+                        />
+                      ) : (
+                        <div className={`w-full h-full flex items-center justify-center bg-brand-light/20 ${
+                          viewMode === 'compact' ? 'rounded-xl' : ''
+                        }`}>
+                          <ImageIcon className={`${
+                            viewMode === 'compact' ? 'h-8 w-8' : 'h-16 w-16'
+                          } text-brand-dark/30 group-hover:text-brand-orange transition-colors`} />
+                        </div>
+                      )}
+                      
+                      {/* Image Overlay */}
+                      <div className={`absolute inset-0 bg-gradient-to-t from-brand-dark/60 via-transparent to-transparent ${
+                        viewMode === 'compact' ? 'opacity-0' : 'opacity-100'
+                      }`}></div>
+                      
+                      {/* Category Name Overlay (Grid View) */}
+                      {viewMode === 'grid' && (
+                        <div className="absolute bottom-0 left-0 right-0 p-4">
+                          <h3 className="text-white text-xl font-bold drop-shadow-lg">
+                            {category.name}
+                          </h3>
+                          <div className="flex items-center text-white/80 text-sm mt-1">
+                            <Package size={14} className="mr-1" />
+                            <span>{category.productCount || 'Multiple'} Products</span>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Content (Compact View) */}
+                    {viewMode === 'compact' ? (
+                      <div className="flex-1 min-w-0 relative z-10">
+                        <h3 className="text-lg font-bold text-brand-dark group-hover:text-brand-orange transition-colors">
+                          {category.name}
+                        </h3>
+                        <div className="flex items-center text-brand-dark/60 text-sm mt-1">
+                          <Package size={14} className="mr-1" />
+                          <span>{category.productCount || 'Multiple'} Products</span>
+                        </div>
+                        <div className="mt-3">
+                          <span className="inline-flex items-center text-brand-orange font-semibold text-sm group-hover:gap-2 transition-all gap-1">
+                            Browse
+                            <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                          </span>
+                        </div>
+                      </div>
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center text-brand-olive/40 group-hover:text-brand-olive transition-colors">
-                        <ImageIcon size={64} />
+                      /* View Products Button (Grid View) */
+                      <div className="p-4 relative z-10 bg-white">
+                        <button 
+                          className="w-full py-2.5 px-4 rounded-xl bg-brand-olive/10 text-brand-olive font-semibold hover:bg-brand-olive hover:text-white transition-all duration-300 flex items-center justify-center gap-2 group-hover:shadow-lg"
+                        >
+                          <span>View Products</span>
+                          <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                        </button>
                       </div>
                     )}
-                    {/* Hover Overlay */}
-                    <div className="absolute inset-0 bg-brand-dark/0 group-hover:bg-brand-dark/10 transition-colors duration-300" />
-                  </div>
-                  
-                  {/* Category Content */}
-                  <div className="p-6 flex flex-col flex-grow">
-                    <h3 className="text-xl font-bold text-brand-dark mb-2">{category.name}</h3>
                     
-                    {/* Product Count Indicator */}
-                    <div className="flex items-center text-brand-dark/60 text-sm font-medium mb-6">
-                      <Package size={16} className="mr-2 text-brand-olive" />
-                      {/* Using fallback 'Multiple' since exact count might not be in the basic category API */}
-                      <span>{category.productCount || 'Multiple'} Products</span>
+                    {/* Decorative corner badge */}
+                    <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm rounded-full p-1.5 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <ChevronRight className="h-4 w-4 text-brand-orange" />
                     </div>
-
-                    {/* View Products Button */}
-                    <button 
-                      className="mt-auto flex items-center justify-between w-full py-3 px-5 rounded-xl border border-brand-olive text-brand-olive font-bold group-hover:bg-brand-olive group-hover:text-white transition-colors"
-                    >
-                      <span>View Products</span>
-                      <ArrowRight size={18} className="transform group-hover:translate-x-1 transition-transform" />
-                    </button>
                   </div>
+                ))
+              ) : (
+                /* Empty State for Search */
+                <div className="col-span-full py-20 text-center">
+                  <div className="inline-flex items-center justify-center w-24 h-24 rounded-full bg-brand-light/30 mb-6">
+                    <Search size={40} className="text-brand-dark/30" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-brand-dark mb-3">No categories found</h3>
+                  <p className="text-brand-dark/60 text-lg max-w-md mx-auto">
+                    We couldn't find anything matching "<span className="text-brand-orange font-semibold">{searchTerm}</span>"
+                  </p>
+                  <button
+                    onClick={() => setSearchTerm('')}
+                    className="mt-6 inline-flex items-center gap-2 text-brand-orange font-semibold hover:gap-3 transition-all"
+                  >
+                    Clear search
+                    <ArrowRight size={16} />
+                  </button>
                 </div>
-              ))
-            ) : (
-              /* Empty State for Search */
-              <div className="col-span-full py-20 text-center">
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-brand-light/50 text-brand-dark/40 mb-4">
-                  <Search size={32} />
-                </div>
-                <h3 className="text-xl font-bold text-brand-dark mb-2">No categories found</h3>
-                <p className="text-brand-dark/60">We couldn't find anything matching "{searchTerm}".</p>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
+              )}
+            </div>
+          )}
+
+          {/* Bottom CTA */}
+          {!isLoading && filteredCategories.length > 0 && (
+            <div className="mt-12 pt-8 border-t border-gray-100 text-center">
+              <p className="text-brand-dark/60 mb-4">Can't find what you're looking for?</p>
+              <button
+                onClick={() => navigate('/products')}
+                className="inline-flex items-center gap-2 bg-brand-orange text-white px-8 py-3 rounded-xl font-bold shadow-lg shadow-brand-orange/20 hover:shadow-brand-orange/40 transition-all hover:gap-3"
+              >
+                Browse All Products
+                <ShoppingBag className="h-5 w-5" />
+              </button>
+            </div>
+          )}
+        </div>
+      </section>
+
     </div>
   );
 }

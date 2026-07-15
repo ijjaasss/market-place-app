@@ -1,16 +1,17 @@
 // src/store/productSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import api from '../api/axios';
+import { fetchCartCount } from "./cartSlice";
+import { fetchWishlistCount } from './wishlistSlice';
+import { toast } from 'react-toastify';
 
-// Async Thunk to fetch a list of products (with optional filters/pagination)
 export const fetchProducts = createAsyncThunk(
   'products/fetchAll',
   async (params = {}, { rejectWithValue }) => {
     try {
-      // Axios handles converting the params object into a query string
-      // e.g., { search: 'shirt', page: 1 } -> ?search=shirt&page=1
+
       const response = await api.get('/products', { params });
-      return response.data; // Returning the whole data object to keep pagination info
+      return response.data; 
     } catch (error) {
       const message = error.response?.data?.message || 'Failed to fetch products';
       return rejectWithValue(message);
@@ -45,9 +46,11 @@ export const fetchProductsByCategory = createAsyncThunk(
 );
 export const addToCart = createAsyncThunk(
   'products/addToCart',
-  async (productId, { rejectWithValue }) => {
+  async (productId, { rejectWithValue,dispatch }) => {
     try {
       const response = await api.post('/cart', { productId, quantity: 1 });
+        dispatch(fetchCartCount());
+     
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to add to cart');
@@ -57,9 +60,10 @@ export const addToCart = createAsyncThunk(
 
 export const addToWishlist = createAsyncThunk(
   'products/addToWishlist',
-  async (productId, { rejectWithValue }) => {
+  async (productId, { rejectWithValue,dispatch }) => {
     try {
       const response = await api.post('/wishlist', { productId });
+      dispatch(fetchWishlistCount())
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || 'Failed to add to wishlist');

@@ -4,6 +4,7 @@ import { useDispatch } from 'react-redux'; // Import useDispatch
 import { useNavigate } from 'react-router-dom';
 import { Heart, ShoppingCart, Eye, Loader2 } from 'lucide-react';
 import { addToCart, addToWishlist } from '../store/productSlice'; // Import actions
+import { toast } from 'react-toastify';
 
 export default function ProductCard({ product }) {
     
@@ -15,15 +16,15 @@ export default function ProductCard({ product }) {
   const handleAddToCart = async () => {
     setLoading(true);
     await dispatch(addToCart(product._id)).unwrap()
-      .then(() => alert("Added to cart!"))
-      .catch((err) => alert(err));
+      .then(() =>    toast.success("Added to cart"))
+      .catch((err) => toast.error(err));
     setLoading(false);
   };
 
   const handleAddToWishlist = async () => {
     await dispatch(addToWishlist(product._id)).unwrap()
-      .then(() => alert("Added to wishlist!"))
-      .catch((err) => alert(err));
+      .then(() => toast.success("Added to wishlist!"))
+      .catch((err) => toast.error(err));
   };
 
   return (

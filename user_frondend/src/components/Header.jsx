@@ -52,7 +52,7 @@ export default function Header() {
           {/* Left - Logo */}
           <div className="flex-shrink-0 flex items-center">
             <Link to="/" className="text-2xl font-black text-brand-orange tracking-tight">
-              Golden Bites<span className="text-brand-olive">.</span>
+              Market Place<span className="text-brand-olive">.</span>
             </Link>
           </div>
 
