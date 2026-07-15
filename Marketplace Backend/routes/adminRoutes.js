@@ -1,7 +1,7 @@
 import express from "express"
 import {   getAdminDashboard,  getAdminProfile,   loginAdmin } from "../controllers/AdminController.js"
 import { adminAuthMiddleware, isAdmin } from "../middlewares/adminMiddleware.js"
-import { Logout } from "../controllers/PublicController.js"
+import { LogoutAdmin } from "../controllers/PublicController.js"
 import upload from "../middlewares/upload.js"
 import adminUser from "./admin/adminUserRoutes.js"
 import adminProduct from "./admin/adminProductRoutes.js"
@@ -13,7 +13,7 @@ import adminReviewRoutes from "./admin/adminReviewRoutes.js"
 const router=express.Router()
 
 router.post('/login',loginAdmin)
-router.post('/logout',Logout)
+router.post('/logout',LogoutAdmin)
 
 router.get('/me',adminAuthMiddleware,isAdmin,getAdminProfile)
 router.get('/dashboard',adminAuthMiddleware,isAdmin,getAdminDashboard)

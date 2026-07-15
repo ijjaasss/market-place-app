@@ -2,7 +2,7 @@ import express from "express"
 import {  getSellerDashboard,   getSellerProfile, loginSeller, registerSeller } from "../controllers/SellerController.js"
 import upload from "../middlewares/upload.js"
 import { isApproveAdmin, isSeller, sellerAuthMiddleware } from "../middlewares/sellerMiddlware.js"
-import { Logout } from "../controllers/PublicController.js"
+import { LogoutSeller } from "../controllers/PublicController.js"
 import sellerProductRoute from "./seller/sellerProductRoutes.js"
 import sellerCategorieRoutes from "./seller/sellerCategorieRoutes.js"
 import sellrOrderRoutes from "./seller/sellerOrderRoutes.js"
@@ -21,7 +21,7 @@ router.post('/register',
 
 router.post('/login',loginSeller)
 router.get('/me',sellerAuthMiddleware,isSeller,getSellerProfile)
-router.post('/logout',Logout)
+router.post('/logout',LogoutSeller)
 router.get("/dashboard",sellerAuthMiddleware,isSeller,getSellerDashboard)
 router.use('/products',sellerProductRoute)
 router.use("/categories",sellerCategorieRoutes)

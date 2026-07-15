@@ -71,7 +71,7 @@ export const loginSeller =asyncHandler( async (req, res,next) => {
     if(seller.isBlocked){
         return next(new AppError( "Your account has been blocked. Please contact the administrator.",403))
     }
-      sendToken(seller, 200, res);
+      sendToken(seller,"sellerToken", 200, res);
     
 
 })

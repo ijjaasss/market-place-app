@@ -10,8 +10,8 @@ export const adminAuthMiddleware = asyncHandler(async (req, res, next) => {
        let token;
 
 
-    if (req.cookies && req.cookies.token) {
-      token = req.cookies.token;
+    if (req.cookies && req.cookies.adminToken) {
+      token = req.cookies.adminToken;
     }
 
   

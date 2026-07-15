@@ -7,28 +7,25 @@ export const generateToken = (id) => {
   });
 };
 
-
-export const sendToken = (user, statusCode, res) => {
-  
+export const sendToken = (user, cookieName, statusCode, res) => {
   const token = generateToken(user._id);
 
-
   const options = {
-   
     httpOnly: true,
-    secure: env.NODE_ENV === 'production', 
-    sameSite: env.NODE_ENV === 'production'?'None': 'Lax' ,
-    path: '/',
-     maxAge: 30 * 24 * 60 * 60 * 1000, 
+    secure: env.NODE_ENV === "production",
+    sameSite: env.NODE_ENV === "production" ? "None" : "Lax",
+    path: "/",
+    maxAge: 30 * 24 * 60 * 60 * 1000,
   };
-
 
   user.password = undefined;
 
-  res.status(200).cookie('token', token, options).json({
+  res
+    .status(statusCode)
+    .cookie(cookieName, token, options)
+    .json({
       success: true,
       token,
-      data: user
+      data: user,
     });
-
 };

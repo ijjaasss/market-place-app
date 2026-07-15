@@ -19,7 +19,7 @@ export const loginAdmin =asyncHandler( async (req, res,next) => {
     if(!admin || !(await admin.matchPassword(password))){
         return next(new AppError("Invalid credentials", 400));
     }
-      sendToken(admin, 200, res);
+      sendToken(admin,"adminToken", 200, res);
     
 
 })
